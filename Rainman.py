@@ -28,10 +28,16 @@ for x in range(0,total_decks):
 print(len(deck))
 
 #BREAK OUT INTO ITS OWN FUNCTION FOR BETS
-bank = 1000.00
+bank = 100.00
 #how should we break out bets?
+bet_values = [1.00,2.00,5.00,10.00]
+min_bet_value = 1.00
+max_bet_value = 10.00
+default_bet_value = 2.00
+bet = default_bet_value#Agent choice
 #bet logic and winnings (including bank updates) will need to be built in to logic below
 #agent will need to be aware of their bank total and know when to quit
+
 
 #BREAK OUT INTO ITS OWN FUNCTION FOR HOUSE DRAW
 #Agent does not see house values until they stay, hit blackjack, or bust
@@ -46,51 +52,89 @@ print(sum(house_draw))
 
 if sum(house_draw) == 21:
     print("House Blackjack, Check your draw... if you have blackjack it is a push, if you do not it is a draw")
+elif sum(house_draw) == 22:
+    house_draw.insert(1,1)
 
 
 #BREAK OUT INTO ITS OWN FUNCTION FOR AGENT DRAW
 agent_draw = []
 random.shuffle(deck)
 agent_draw.append(deck.pop(random.randrange(0,len(deck))))
+
 random.shuffle(deck)
 agent_draw.append(deck.pop(random.randrange(0,len(deck))))
 
 print(agent_draw)
 print(sum(agent_draw))
 agent_choice = ""
+blackjack_status = 'N'
+
+if sum(agent_draw) == 22:
+    agent_draw.insert(1,1)
 
 if sum(house_draw) == 21 and sum(agent_draw) == 21:
-    print("push")
+    print("")
 elif sum(house_draw) == 21 and sum(agent_draw) != 21:
-    print("you lose!")
+    print("")
 elif sum(agent_draw) == 21:
     print("Blackjack! Let's see what the house has")
+    blackjack_status = 'Y'
 else:
     print("Would you like to Hit or Stay?")
     #Need to determine how to allow agent choice of hit or stay
     if agent_choice == "Hit":
         agent_draw.append(deck.pop(random.randrange(0,len(deck))))
+        for value in agent_draw:
+            if value == 11:
+                print("Would you like to change this to a 1?")
+                #Allow agent to choose yes or no then update accordingly
         if sum(agent_draw) == 21:
-            print("You've hit the max! Let's see what the house has")
+            print("You've hit the max without going over! Let's see what the house has")
+        elif sum(agent_draw) > 21:
+            print("")
         else:
             print("Would you like to Hit or Stay?")
+            if agent_choice == "Hit":
+                agent_draw.append(deck.pop(random.randrange(0,len(deck))))
+                for value in agent_draw:
+                    if value == 11:
+                        print("Would you like to change this to a 1?")
+                        #Allow agent to choose yes or no
+            if sum(agent_draw) == 21:
+                print("You've hit the max without going over! Let's see what the house has")
+            elif sum(agent_draw) > 21:
+                print("")
+            else:
+                print("Would you like to Hit or Stay?")
 
 #house rules state that dealer must draw until they reach at least 17. if 17 is reached they must stay
-while sum(house_draw) < 17:
-    house_draw.append(deck.pop(random.randrange(0,len(deck))))
-print(sum(house_draw))
+if blackjack_status == 'N':
+    while sum(house_draw) < 17:
+        house_draw.append(deck.pop(random.randrange(0,len(deck))))
+        if sum(house_draw) > 21:
+            house_draw = [1 if i == 11 else i for i in house_draw]
 
 if sum(house_draw) == 21 and sum(agent_draw) == 21:
     print("Push, you get your original bet back")
 elif sum(house_draw) == 21 and sum(agent_draw) != 21:
     print("you lose this round")
+    bank = bank-bet
 elif sum(house_draw) != 21 and sum(agent_draw) == 21:
     print("Blackjack! You win!")
+    bank = bank+(bet*2)
 elif sum(agent_draw) > 21:
     print("bust! You lose this round")
+    bank = bank-bet
 elif sum(house_draw) == sum(agent_draw):
     print("Push, you get your original bet back")
 elif sum(house_draw) < sum(agent_draw):
     print("you win!")
+    bank = bank+bet
 elif sum(house_draw) < 21 and sum(house_draw) > sum(agent_draw):
     print("you lose")
+    bank = bank-bet
+elif sum(house_draw) > 21 and sum(agent_draw) < 21:
+    print("you win!")
+    bank = bank+bet
+    
+print(bank)
