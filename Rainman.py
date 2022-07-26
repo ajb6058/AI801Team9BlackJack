@@ -1,9 +1,8 @@
-import sys
-import scipy
-import numpy
-import matplotlib
-import pandas
-import sklearn
+# import sys
+# import numpy
+# import matplotlib
+# import pandas
+# import sklearn
 import os
 #import Blackjack_func <-- This will be where we store the different functions
 import random
@@ -56,6 +55,10 @@ max_bet_value = 10.00
 
 #we need to give the agent the ability to choose their bet
 default_bet_value = 2.00
+
+## Number of winds and losses
+wins = 0
+losses = 0
 
 #currently utilizing a while loop for testing. If Bank goes below 1.00 or deck goes below a summed value of 60, stop
 #When the deck class is created, we can create a nested while loop
@@ -372,23 +375,29 @@ while bank >= 1.00 and sum(deck) >= 60:
     elif sum(house_draw) == 21 and sum(agent_draw) != 21:
         print("you lose this round")
         bank = bank-bet
+        losses = losses+1
     elif sum(house_draw) != 21 and sum(agent_draw) == 21:
         print("Blackjack! You win!")
         bank = bank+(bet*2)
+        wins = wins +1
     elif sum(agent_draw) > 21:
         print("bust! You lose this round")
         bank = bank-bet
+        losses = losses+1
     elif sum(house_draw) == sum(agent_draw):
         print("Push, you get your original bet back")
     elif sum(house_draw) < sum(agent_draw):
         print("you win!")
         bank = bank+bet
+        wins = wins +1
     elif sum(house_draw) < 21 and sum(house_draw) > sum(agent_draw):
         print("you lose")
         bank = bank-bet
+        losses = losses+1
     elif sum(house_draw) > 21 and sum(agent_draw) < 21:
         print("you win!")
         bank = bank+bet
+        wins = wins +1
     #END GAME REWARD LOGIC
         
     print(bank)
@@ -415,4 +424,6 @@ if sum(deck) < 60:
     print('Re-shuffling deck')
     print('current bank value: '+str(bank))
     print("total games played so far: ",str(gameCounter))
+    print(f"total wins so far: {wins}")
+    print(f"Perecentage wins: {(wins/gameCounter) * 100}%")
     #call "deck" class to re-instantiate the deck
