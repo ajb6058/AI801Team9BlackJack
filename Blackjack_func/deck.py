@@ -1,29 +1,16 @@
-import random
 
 
-
-class Deck :
-    def __init__(self) :
-        self.cards = []
+class Deck:
+    def __init__(self, total_decks = 3):
+        self.cards = 4 * ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
+        self.card_values = {"A": 11, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7, "8":8, "9":9, "10":10, "J":10, "Q":10, "K":10}
+        self.total_decks = total_decks
         
-        self.build ()
-
-    def build(self):
-        for s in ["Spades", "Clubs", "Diamonds", "Hearts"] :
-            for v in range (1 , 14) :
-                self.cards.append(Card(s , v))
-
-    def show(self):
-        for c in self.cards:
-            c.show
-
-    def shuffle(self) :
-        for i in range (len(self.cards)-1,0,-1)
-            r = random.randint(0 , i)
-            self.cards[i]  , self.crads[r] = self.cards[r] , self.cards[i]
-
-deck = Deck()
-
-deck.shuffle()
-
-deck.show()
+    def deck(self):
+        deck = []
+         
+        # Create the base deck
+        for x in range(0,self.total_decks):
+            for card in self.cards:
+                deck.append(self.card_values[card])
+        return deck

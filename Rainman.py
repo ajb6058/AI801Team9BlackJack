@@ -4,16 +4,16 @@
 # import pandas
 # import sklearn
 import os
-#import Blackjack_func <-- This will be where we store the different functions
+import Blackjack_func
 import random
 
 ##############################################################################
 #                           TO DO
-# --Create a "Deck" Class
-#   --Deck class will include a deck function that will build the deck and be called to "re-build" the deck once the deck gets too low
-# --Create a "Initial Hand" class
+# --Create a "Initial Hand" class -- Not sure if this is actually doable...
 #   --Initial hand can be used for both house and agent, but may be tricky if they are not their own functions, 
 #     this will require additional testing
+# --Create a "Bet" class?
+#
 # --Create an agent
 #   --Currently, the "agent" values are hard-coded, but an agent will be needed to play the game
 # --Create a script for testing/learning
@@ -24,23 +24,9 @@ import random
 # --Run a test with different bet values as the default
 ##############################################################################
 
-#BREAK OUT CARDS/DECK INTO ITS OWN FUNCTION
-# The type of card
-cards = 4 * ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
- 
-# The card value
-cards_values = {"A": 11, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7, "8":8, "9":9, "10":10, "J":10, "Q":10, "K":10}
 
-# Total Decks
-total_decks = 3
-
-# The deck of cards
-deck = []
- 
-# Create the base deck
-for x in range(0,total_decks):
-    for card in cards:
-        deck.append(cards_values[card])
+initdeck = Blackjack_func.Deck()
+deck = initdeck.deck()
 
 #create a counter to keep track of how many games were played
 gameCounter = 0
@@ -81,6 +67,7 @@ while bank >= 1.00 and sum(deck) >= 60:
     house_draw.append(deck.pop(random.randrange(0,len(deck))))
     random.shuffle(deck)
     house_draw.append(deck.pop(random.randrange(0,len(deck))))
+    
     
     print(house_draw)
     print(sum(house_draw))
@@ -404,12 +391,8 @@ while bank >= 1.00 and sum(deck) >= 60:
     print(sum(deck))
     #if sum(deck) < 60:
         #re-create deck
-    #    deck = []
- 
-        # Create the base deck
-    #    for x in range(0,total_decks):
-    #        for card in cards:
-    #            deck.append(cards_values[card])
+    #    deck = initdeck.deck()
+
     
     gameCounter += 1
     #End While Loop

@@ -1,3 +1,4 @@
 # __init__.py
 
-from .cards import Card
+from .deck import Deck
+from .inithand import InitHand
