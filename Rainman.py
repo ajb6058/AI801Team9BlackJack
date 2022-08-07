@@ -3,6 +3,8 @@
 # import matplotlib
 # import pandas
 # import sklearn
+import tensorforce
+import kerasRL
 import os
 import Blackjack_func
 import random
@@ -46,10 +48,13 @@ default_bet_value = 2.00
 wins = 0
 losses = 0
 
+#Initiatlizing agent continue playing
+AgentContinue = 'Y'
+
 #currently utilizing a while loop for testing. If Bank goes below 1.00 or deck goes below a summed value of 60, stop
 #When the deck class is created, we can create a nested while loop
 #The outer loop will check for bank value, the inner loop will check for deck size and re-shuffle when deck goes below a summed value of 60
-while bank >= 1.00 and sum(deck) >= 60:
+while bank >= 1.00 and sum(deck) >= 60 and AgentContinue == 'Y':
     
     #Agent choice each new turn, currently set to default value for testing
     bet = default_bet_value
@@ -97,8 +102,13 @@ while bank >= 1.00 and sum(deck) >= 60:
     #setting variable for agent choice for converting ace value to 1 "Y" or "N"
     agent_choice_ace = "Y" #Scenario if the agent always converted ace to 1
     
-    #Initializing agent blackjack status. If converted, it will be used for 
+    #Initializing agent blackjack status. 
     blackjack_status = 'N'
+    
+    #Initializing agent bust status.
+    bust = 'N'
+    
+    
     
     #START GAME AGENT CHOICE LOGIC
     if sum(agent_draw) == 22:
@@ -130,7 +140,7 @@ while bank >= 1.00 and sum(deck) >= 60:
             if sum(agent_draw) == 21:
                 print("You've hit the max without going over! Let's see what the house has")
             elif sum(agent_draw) > 21:
-                print("")
+                bust = 'Y'
             else:
                 print("Current hand value: "+str(sum(agent_draw))+" Would you like to Hit or Stay?")
                 if agent_choice == "Hit":
@@ -144,7 +154,7 @@ while bank >= 1.00 and sum(deck) >= 60:
                 if sum(agent_draw) == 21:
                     print("You've hit the max without going over! Let's see what the house has")
                 elif sum(agent_draw) > 21:
-                    print("")
+                    bust = 'Y'
                 else:
                     print("Current hand value: "+str(sum(agent_draw))+" Would you like to Hit or Stay?")
                     if agent_choice == "Hit":
@@ -158,7 +168,7 @@ while bank >= 1.00 and sum(deck) >= 60:
                     if sum(agent_draw) == 21:
                         print("You've hit the max without going over! Let's see what the house has")
                     elif sum(agent_draw) > 21:
-                        print("")
+                        bust = 'Y'
                     else:
                         print("Current hand value: "+str(sum(agent_draw))+" Would you like to Hit or Stay?")
                         if agent_choice == "Hit":
@@ -172,7 +182,7 @@ while bank >= 1.00 and sum(deck) >= 60:
                             if sum(agent_draw) == 21:
                                 print("You've hit the max without going over! Let's see what the house has")
                             elif sum(agent_draw) > 21:
-                                print("")
+                                bust = 'Y'
                             else:
                                 print("Current hand value: "+str(sum(agent_draw))+" Would you like to Hit or Stay?")
                                 if agent_choice == "Hit":
@@ -186,7 +196,7 @@ while bank >= 1.00 and sum(deck) >= 60:
                                     if sum(agent_draw) == 21:
                                         print("You've hit the max without going over! Let's see what the house has")
                                     elif sum(agent_draw) > 21:
-                                        print("")
+                                        bust = 'Y'
                                     else:
                                         print("Current hand value: "+str(sum(agent_draw))+" Would you like to Hit or Stay?")
                                         if agent_choice == "Hit":
@@ -200,7 +210,7 @@ while bank >= 1.00 and sum(deck) >= 60:
                                             if sum(agent_draw) == 21:
                                                 print("You've hit the max without going over! Let's see what the house has")
                                             elif sum(agent_draw) > 21:
-                                                print("")
+                                                bust = 'Y'
                                             else:
                                                 print("Current hand value: "+str(sum(agent_draw))+" Would you like to Hit or Stay?")
                                                 if agent_choice == "Hit":
@@ -214,7 +224,7 @@ while bank >= 1.00 and sum(deck) >= 60:
                                                     if sum(agent_draw) == 21:
                                                         print("You've hit the max without going over! Let's see what the house has")
                                                     elif sum(agent_draw) > 21:
-                                                        print("")
+                                                        bust = 'Y'
                                                     else:
                                                         print("Current hand value: "+str(sum(agent_draw))+" Would you like to Hit or Stay?")
                                                         if agent_choice == "Hit":
@@ -228,7 +238,7 @@ while bank >= 1.00 and sum(deck) >= 60:
                                                             if sum(agent_draw) == 21:
                                                                 print("You've hit the max without going over! Let's see what the house has")
                                                             elif sum(agent_draw) > 21:
-                                                                print("")
+                                                                bust = 'Y'
                                                             else:
                                                                 print("Current hand value: "+str(sum(agent_draw))+" Would you like to Hit or Stay?")
                                                                 if agent_choice == "Hit":
@@ -242,7 +252,7 @@ while bank >= 1.00 and sum(deck) >= 60:
                                                                     if sum(agent_draw) == 21:
                                                                         print("You've hit the max without going over! Let's see what the house has")
                                                                     elif sum(agent_draw) > 21:
-                                                                        print("")
+                                                                        bust = 'Y'
                                                                     else:
                                                                         print("Current hand value: "+str(sum(agent_draw))+" Would you like to Hit or Stay?")
                                                                         if agent_choice == "Hit":
@@ -256,7 +266,7 @@ while bank >= 1.00 and sum(deck) >= 60:
                                                                             if sum(agent_draw) == 21:
                                                                                 print("You've hit the max without going over! Let's see what the house has")
                                                                             elif sum(agent_draw) > 21:
-                                                                                print("")
+                                                                                bust = 'Y'
                                                                             else:
                                                                                 print("Current hand value: "+str(sum(agent_draw))+" Would you like to Hit or Stay?")
                                                                                 if agent_choice == "Hit":
@@ -270,7 +280,7 @@ while bank >= 1.00 and sum(deck) >= 60:
                                                                                     if sum(agent_draw) == 21:
                                                                                         print("You've hit the max without going over! Let's see what the house has")
                                                                                     elif sum(agent_draw) > 21:
-                                                                                        print("")
+                                                                                        bust = 'Y'
                                                                                     else:
                                                                                         print("Current hand value: "+str(sum(agent_draw))+" Would you like to Hit or Stay?")
                                                                                         if agent_choice == "Hit":
@@ -284,7 +294,7 @@ while bank >= 1.00 and sum(deck) >= 60:
                                                                                             if sum(agent_draw) == 21:
                                                                                                 print("You've hit the max without going over! Let's see what the house has")
                                                                                             elif sum(agent_draw) > 21:
-                                                                                                print("")
+                                                                                                bust = 'Y'
                                                                                             else:
                                                                                                 print("Current hand value: "+str(sum(agent_draw))+" Would you like to Hit or Stay?")
                                                                                                 if agent_choice == "Hit":
@@ -298,7 +308,7 @@ while bank >= 1.00 and sum(deck) >= 60:
                                                                                                     if sum(agent_draw) == 21:
                                                                                                         print("You've hit the max without going over! Let's see what the house has")
                                                                                                     elif sum(agent_draw) > 21:
-                                                                                                        print("")
+                                                                                                        bust = 'Y'
                                                                                                     else:
                                                                                                         print("Current hand value: "+str(sum(agent_draw))+" Would you like to Hit or Stay?")
                                                                                                         if agent_choice == "Hit":
@@ -312,7 +322,7 @@ while bank >= 1.00 and sum(deck) >= 60:
                                                                                                             if sum(agent_draw) == 21:
                                                                                                                 print("You've hit the max without going over! Let's see what the house has")
                                                                                                             elif sum(agent_draw) > 21:
-                                                                                                                print("")
+                                                                                                                bust = 'Y'
                                                                                                             else:
                                                                                                                 print("Current hand value: "+str(sum(agent_draw))+" Would you like to Hit or Stay?")
                                                                                                                 if agent_choice == "Hit":
@@ -326,7 +336,7 @@ while bank >= 1.00 and sum(deck) >= 60:
                                                                                                                     if sum(agent_draw) == 21:
                                                                                                                         print("You've hit the max without going over! Let's see what the house has")
                                                                                                                     elif sum(agent_draw) > 21:
-                                                                                                                        print("")
+                                                                                                                        bust = 'Y'
                                                                                                                     else:
                                                                                                                         print("Current hand value: "+str(sum(agent_draw))+" Would you like to Hit or Stay?")
                                                                                                                         if agent_choice == "Hit":
@@ -340,14 +350,14 @@ while bank >= 1.00 and sum(deck) >= 60:
                                                                                                                             if sum(agent_draw) == 21:
                                                                                                                                 print("You've hit the max without going over! Let's see what the house has")
                                                                                                                             elif sum(agent_draw) > 21:
-                                                                                                                                print("")
+                                                                                                                                bust = 'Y'
                                                                                                                             else:
                                                                                                                                 print("Current hand value: "+str(sum(agent_draw))+" Would you like to Hit or Stay?")
                     
     #STOP GAME AGENT CHOICE LOGIC
     
     #house rules state that dealer must draw until they reach at least 17. if 17 is reached they must stay
-    if blackjack_status == 'N':
+    if blackjack_status == 'N' and bust = 'N':
         while sum(house_draw) < 17:
             house_draw.append(deck.pop(random.randrange(0,len(deck))))
             if sum(house_draw) > 21:
@@ -357,7 +367,11 @@ while bank >= 1.00 and sum(deck) >= 60:
     print(sum(agent_draw))
     
     #START GAME REWARD LOGIC
-    if sum(house_draw) == 21 and sum(agent_draw) == 21:
+    if bust = 'Y':
+        print("bust! you lose this round")
+        bank = bank-bet
+        losses = losses+1
+    elif sum(house_draw) == 21 and sum(agent_draw) == 21:
         print("Push, you get your original bet back")
     elif sum(house_draw) == 21 and sum(agent_draw) != 21:
         print("you lose this round")
@@ -387,7 +401,6 @@ while bank >= 1.00 and sum(deck) >= 60:
         wins = wins +1
     #END GAME REWARD LOGIC
         
-    print(bank)
     print(sum(deck))
     #if sum(deck) < 60:
         #re-create deck
@@ -395,12 +408,21 @@ while bank >= 1.00 and sum(deck) >= 60:
 
     
     gameCounter += 1
+    print("current bank amount: $"+str(bank))
+    print("Continue Playing?")
+    AgentContinue = 'Y'
+    
     #End While Loop
+
+if AgentContinue = 'N'
+    print("You have chosen not to continue playing")
+    print("total games played: ",str(gameCounter))
+    print(f"total wins so far: {wins}")
+    print(f"Perecentage wins: {(wins/gameCounter) * 100}%")
 
 if bank < 1.00:
     print("Game Over, no money left in the bank")
     print("total games played: ",str(gameCounter))
-    os._exit(0)
     #AI cannot continue if bank < minimum bet
 
 if sum(deck) < 60:
