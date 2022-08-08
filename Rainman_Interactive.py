@@ -8,23 +8,6 @@
 import Blackjack_func
 import random
 
-##############################################################################
-#                           TO DO
-# --Create a "Initial Hand" class -- Not sure if this is actually doable...
-#   --Initial hand can be used for both house and agent, but may be tricky if they are not their own functions, 
-#     this will require additional testing
-# --Create a "Bet" class?
-#
-# --Create an agent
-#   --Currently, the "agent" values are hard-coded, but an agent will be needed to play the game
-# --Create a script for testing/learning
-# --Look for alternative solution for nested if-else statements (dynamic based on deck size preferred)
-# --Nest the while loop to continue to run and shuffle the deck
-#   --Run a test to see how many games are played before busting
-# --Run a test with hitting every time
-# --Run a test with different bet values as the default
-##############################################################################
-
 
 initdeck = Blackjack_func.Deck()
 deck = initdeck.deck()
@@ -32,22 +15,17 @@ deck = initdeck.deck()
 #create a counter to keep track of how many games were played
 gameCounter = 0
 
-#BREAK OUT INTO ITS OWN FUNCTION FOR BETS
 #From proposal, we decided that the user would start out with $100 in the bank
 bank = 100.00
-#how should we break out bets?
-bet_values = [1.00,2.00,5.00,10.00]
-min_bet_value = 1.00
-max_bet_value = 10.00
 
-#we need to give the agent the ability to choose their bet
+#if no value is supplied, 2 is the default bet value (not applicable in case of AI playing)
 default_bet_value = 2.00
 
 ## Number of winds and losses
 wins = 0
 losses = 0
 
-##Agent Reward
+##Agent Reward tracker
 RoundRewards = []
 
 #Initiatlizing agent continue playing
@@ -110,7 +88,7 @@ while bank >= 1.00 and sum(deck) >= 60 and (str.upper(AgentContinue) == 'Y' or s
         print("House Blackjack, Check your draw... if you have blackjack it is a push, if you do not it is a draw")
     elif sum(house_draw) == 22:
         #because it is possible to draw 2 aces in a single hand, we want to force one of those aces to be a 1 (since ace value by default is 11, but can be 1)
-        house_draw.insert(1,1)
+        house_draw[1] = 1
         print("initial house cards: "+str(house_draw[0])+" + ??")
     else:
         print("initial house cards: "+str(house_draw[0])+" + ??")
@@ -139,7 +117,7 @@ while bank >= 1.00 and sum(deck) >= 60 and (str.upper(AgentContinue) == 'Y' or s
     
     #START GAME AGENT CHOICE LOGIC
     if sum(agent_draw) == 22:
-        agent_draw.insert(1,1)
+        agent_draw[1] = 1
     
     print("initial agent cards: "+str(agent_draw[0])+" + "+str(agent_draw[1]))
     print(sum(agent_draw))
@@ -175,8 +153,7 @@ while bank >= 1.00 and sum(deck) >= 60 and (str.upper(AgentContinue) == 'Y' or s
                             print("incorrect value, please enter Y,N,YES, or NO")
                             agent_choice_ace = input()
                         if str.upper(agent_choice_ace) == 'Y' or str.upper(agent_choice_ace) == 'YES':
-                            agent_draw.pop(len(agent_draw)-1)
-                            agent_draw.append(1)
+                            agent_draw[len(agent_draw)-1] = 1
                 if sum(agent_draw) == 21:
                     print("You've hit the max without going over! Let's see what the house has")
                 elif sum(agent_draw) > 21:
