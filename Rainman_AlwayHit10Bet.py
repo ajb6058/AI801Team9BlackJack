@@ -49,7 +49,7 @@ o = open('logs/'+str(os.path.basename(__file__)).replace('.py','')+datetime.now(
 #currently utilizing a while loop for testing. If Bank goes below 1.00 or deck goes below a summed value of 60, stop
 #When the deck class is created, we can create a nested while loop
 #The outer loop will check for bank value, the inner loop will check for deck size and re-shuffle when deck goes below a summed value of 60
-while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES') and test < loops:
+while bank >= 1.00 and str.upper(AgentContinue) in ('Y','YES') and test < loops:
     
     #Agent choice each new turn, currently set to default value for testing
     if gameCounter > 0:
@@ -114,8 +114,15 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
     random.shuffle(deck)
     #Using pop to remove the last value in the deck to ensure that it cannot be selected again
     house_draw.append(deck.pop(random.randrange(0,len(deck))))
+    if sum(deck) < 1:
+        #re-create deck
+        deck = initdeck.deck()
+    
     random.shuffle(deck)
     house_draw.append(deck.pop(random.randrange(0,len(deck))))
+    if sum(deck) < 1:
+        #re-create deck
+        deck = initdeck.deck()
     
     
     if sum(house_draw) == 21:
@@ -133,9 +140,15 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
     agent_draw = []
     random.shuffle(deck)
     agent_draw.append(deck.pop(random.randrange(0,len(deck))))
+    if sum(deck) < 1:
+        #re-create deck
+        deck = initdeck.deck()
     
     random.shuffle(deck)
     agent_draw.append(deck.pop(random.randrange(0,len(deck))))
+    if sum(deck) < 1:
+        #re-create deck
+        deck = initdeck.deck()
     
     
     #setting variable for agent choice of "Hit" or "Stay"
@@ -178,6 +191,9 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
             if str.lower(agent_choice) == "stay":
                 continue
             elif str.lower(agent_choice) == "hit":
+                if len(deck) < 1:
+                    #re-create deck
+                    deck = initdeck.deck()
                 agent_draw.append(deck.pop(random.randrange(0,len(deck))))
                 print("You drew a "+str(agent_draw[len(agent_draw)-1]), file=o)
                 try:
@@ -195,12 +211,17 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
                     print("You've hit the max without going over! Let's see what the house has", file=o)
                 elif sum(agent_draw) > 21:
                     bust = 'Y'
+            if sum(deck) < 1:
+                #re-create deck
+                deck = initdeck.deck()
 
     #STOP GAME AGENT CHOICE LOGIC
     
     #house rules state that dealer must draw until they reach at least 17. if 17 is reached they must stay
     if blackjack_status == 'N' and bust == 'N':
         while sum(house_draw) < 17:
+            if len(deck) < 1:
+                deck = initdeck.deck()
             house_draw.append(deck.pop(random.randrange(0,len(deck))))
             if sum(house_draw) > 21:
                 try:
@@ -208,6 +229,9 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
                     house_draw[house_draw.index(11)] = 1
                 except:
                     continue
+            if sum(deck) < 1:
+                #re-create deck
+                deck = initdeck.deck()
     
     print("House total: "+str(sum(house_draw)), file=o)
     print("Agent total: "+str(sum(agent_draw)), file=o)
@@ -274,7 +298,7 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
     #END GAME REWARD LOGIC
         
     #print(sum(deck))
-    if sum(deck) < 60:
+    if sum(deck) < 1:
         #re-create deck
         deck = initdeck.deck()
 
