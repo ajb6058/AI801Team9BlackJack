@@ -283,10 +283,10 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
     print("current bank amount: $"+str(bank))
     RoundRewards.append(Reward)
     print("Continue Playing?")
-    AgentContinue = 'y'
+    AgentContinue = input()
     while str.upper(AgentContinue) not in ('Y','N','YES','NO'):
         print("incorrect value, please enter Y,N,YES, or NO")
-        AgentContinue = 'y'
+        AgentContinue = input()
     
     #End While Loop
 
