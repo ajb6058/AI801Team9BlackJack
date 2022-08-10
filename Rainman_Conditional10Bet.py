@@ -35,6 +35,7 @@ ties = 0
 
 win_df = pd.DataFrame({"win":[]})
 
+
 ##Agent Reward tracker
 RoundRewards = []
 
@@ -114,8 +115,15 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
     random.shuffle(deck)
     #Using pop to remove the last value in the deck to ensure that it cannot be selected again
     house_draw.append(deck.pop(random.randrange(0,len(deck))))
+    if sum(deck) < 60:
+        #re-create deck
+        deck = initdeck.deck()
+    
     random.shuffle(deck)
     house_draw.append(deck.pop(random.randrange(0,len(deck))))
+    if sum(deck) < 60:
+        #re-create deck
+        deck = initdeck.deck()
     
     
     if sum(house_draw) == 21:
@@ -133,9 +141,15 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
     agent_draw = []
     random.shuffle(deck)
     agent_draw.append(deck.pop(random.randrange(0,len(deck))))
+    if sum(deck) < 60:
+        #re-create deck
+        deck = initdeck.deck()
     
     random.shuffle(deck)
     agent_draw.append(deck.pop(random.randrange(0,len(deck))))
+    if sum(deck) < 60:
+        #re-create deck
+        deck = initdeck.deck()
     
     
     #setting variable for agent choice of "Hit" or "Stay"
@@ -171,10 +185,16 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
         agent_choice = ''
         while str.lower(agent_choice) != 'stay' and sum(agent_draw) < 21 and bust == 'N':
             print("Current hand value: "+str(sum(agent_draw))+" Would you like to Hit or Stay?", file=o)
-            agent_choice = 'hit'
+            if sum(agent_draw) < 17:
+                agent_choice = 'hit'
+            else:
+                agent_choice = 'stay'
             while str.lower(agent_choice) not in ('hit','stay'):
                 print("incorrect value, please enter hit or stay")
-                agent_choice = 'hit'
+                if sum(agent_draw) < 17:
+                    agent_choice = 'hit'
+                else:
+                    agent_choice = 'stay'
             if str.lower(agent_choice) == "stay":
                 continue
             elif str.lower(agent_choice) == "hit":
@@ -195,6 +215,9 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
                     print("You've hit the max without going over! Let's see what the house has", file=o)
                 elif sum(agent_draw) > 21:
                     bust = 'Y'
+            if sum(deck) < 60:
+                #re-create deck
+                deck = initdeck.deck()
 
     #STOP GAME AGENT CHOICE LOGIC
     
@@ -208,11 +231,14 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
                     house_draw[house_draw.index(11)] = 1
                 except:
                     continue
+            if sum(deck) < 60:
+                #re-create deck
+                deck = initdeck.deck()
     
     print("House total: "+str(sum(house_draw)), file=o)
     print("Agent total: "+str(sum(agent_draw)), file=o)
     
-        #START GAME REWARD LOGIC
+    #START GAME REWARD LOGIC
     if bust == 'Y':
         print("bust! you lose this round", file=o)
         bank = bank-bet

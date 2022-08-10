@@ -1,7 +1,7 @@
 # import sys
 # import numpy
 # import matplotlib
-# import pandas
+import pandas as pd
 # import sklearn
 #import tensorforce
 #import kerasRL
@@ -23,6 +23,7 @@ test = 0
 
 #From proposal, we decided that the user would start out with $100 in the bank
 bank = 100.00
+max_bank = bank
 
 #if no value is supplied, 2 is the default bet value (not applicable in case of AI playing)
 default_bet_value = 2.00
@@ -31,6 +32,8 @@ default_bet_value = 2.00
 wins = 0
 losses = 0
 ties = 0
+
+win_df = pd.DataFrame({"win":[]})
 
 ##Agent Reward tracker
 RoundRewards = []
@@ -209,55 +212,65 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
     print("House total: "+str(sum(house_draw)), file=o)
     print("Agent total: "+str(sum(agent_draw)), file=o)
     
-    #START GAME REWARD LOGIC
+        #START GAME REWARD LOGIC
     if bust == 'Y':
         print("bust! you lose this round", file=o)
         bank = bank-bet
         losses = losses+1
         Reward = -1
+        win_df = pd.concat([win_df,pd.DataFrame({"win":[0]})])
     elif sum(house_draw) == 21 and sum(agent_draw) == 21:
         print("Push, you get your original bet back", file=o)
         ties = ties+1
         Reward = 1
+        win_df = pd.concat([win_df,pd.DataFrame({"win":[0]})])
     elif sum(house_draw) == 21 and sum(agent_draw) != 21:
         print("you lose this round", file=o)
         bank = bank-bet
         losses = losses+1
         Reward = -1
+        win_df = pd.concat([win_df,pd.DataFrame({"win":[0]})])
     elif sum(house_draw) != 21 and sum(agent_draw) == 21 and blackjack_status == 'Y':
         print("Blackjack! You win!", file=o)
         bank = bank+(bet*2)
         wins = wins +1
         Reward = 5
+        win_df = pd.concat([win_df,pd.DataFrame({"win":[1]})])
     elif sum(house_draw) != 21 and sum(agent_draw) == 21 and blackjack_status == 'N':
         print("You win!", file=o)
         bank = bank+bet
         wins = wins +1
         Reward = 3
+        win_df = pd.concat([win_df,pd.DataFrame({"win":[1]})])
     elif sum(agent_draw) > 21:
         print("bust! You lose this round", file=o)
         bank = bank-bet
         losses = losses+1
         Reward = -1
+        win_df = pd.concat([win_df,pd.DataFrame({"win":[0]})])
     elif sum(house_draw) == sum(agent_draw):
         print("Push, you get your original bet back", file=o)
         ties = ties+1
         Reward = 1
+        win_df = pd.concat([win_df,pd.DataFrame({"win":[0]})])
     elif sum(house_draw) < sum(agent_draw):
         print("you win!", file=o)
         bank = bank+bet
         wins = wins +1
         Reward = 3
+        win_df = pd.concat([win_df,pd.DataFrame({"win":[1]})])
     elif sum(house_draw) < 21 and sum(house_draw) > sum(agent_draw):
         print("you lose", file=o)
         bank = bank-bet
         losses = losses+1
         Reward = -1
+        win_df = pd.concat([win_df,pd.DataFrame({"win":[0]})])
     elif sum(house_draw) > 21 and sum(agent_draw) < 21:
         print("you win!", file=o)
         bank = bank+bet
         wins = wins +1
         Reward = 3
+        win_df = pd.concat([win_df,pd.DataFrame({"win":[1]})])
     #END GAME REWARD LOGIC
         
     #print(sum(deck))
@@ -268,6 +281,11 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
     
     gameCounter += 1
     test += 1
+    #largest gain
+    if bank > max_bank:
+        max_bank = bank
+    #longest winning streak
+    
     print("current bank amount: $"+str(bank), file=o)
     RoundRewards.append(Reward)
     print("Continue Playing?")
@@ -278,36 +296,40 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
     
     #End While Loop
 
+grouper = (win_df.win != win_df.win.shift()).cumsum()
+win_df['streak'] = win_df.groupby(grouper).cumsum()
+
 if str.upper(AgentContinue) in ('N', 'NO'):
     print("You have chosen not to continue playing")
     print("total games played: "+str(gameCounter))
     print(f"total wins so far: {wins}")
     print(f"Perecentage wins: {(wins/gameCounter) * 100}%")
+    print(f"Perecentage wins (excluding ties): {(wins/(gameCounter-ties)) * 100}%")
     print("total rewards: "+str(sum(RoundRewards)))
     print(f"wins: {wins} losses: {losses} ties: {ties}")
+    print("maximum gain during playing: $"+str(max_bank-100.00))
+    print("maximum winning streak: "+str(win_df['streak'].max()))
 
 if bank < 1.00:
     print("Game Over, no money left in the bank", file=o)
     print("total games played: "+str(gameCounter), file=o)
     print(f"Perecentage wins: {(wins/gameCounter) * 100}%", file=o)
+    print(f"Perecentage wins (excluding ties): {(wins/(gameCounter-ties)) * 100}%", file=o)
     print("total rewards: "+str(sum(RoundRewards)), file=o)
     print(f"wins: {wins} losses: {losses} ties: {ties}", file=o)
+    print("maximum gain during playing: $"+str(max_bank-100.00), file=o)
+    print("maximum winning streak: "+str(win_df['streak'].max()), file=o)
     #AI cannot continue if bank < minimum bet
-    
+ 
 if test == loops:
     print("Simulation complete", file=o)
     print("total games played: "+str(gameCounter), file=o)
     print(f"total wins so far: {wins}", file=o)
     print(f"Perecentage wins: {(wins/gameCounter) * 100}%", file=o)
+    print(f"Perecentage wins (excluding ties): {(wins/(gameCounter-ties)) * 100}%", file=o)
     print("total rewards: "+str(sum(RoundRewards)), file=o)
     print(f"wins: {wins} losses: {losses} ties: {ties}", file=o)
-
-#if sum(deck) < 60:
-#    print('Re-shuffling deck')
-#    print('current bank value: '+str(bank))
-#    print("total games played so far: ",str(gameCounter))
-#    print(f"total wins so far: {wins}")
-#    print(f"Perecentage wins: {(wins/gameCounter) * 100}%")
-    #call "deck" class to re-instantiate the deck
+    print("maximum gain during playing: $"+str(max_bank-100.00), file=o)
+    print("maximum winning streak: "+str(win_df['streak'].max()), file=o)
 
 o.close()

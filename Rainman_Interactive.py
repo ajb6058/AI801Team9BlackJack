@@ -1,12 +1,14 @@
 # import sys
 # import numpy
 # import matplotlib
-# import pandas
+import pandas as pd
 # import sklearn
 #import tensorforce
 #import kerasRL
+import os
 import Blackjack_func
 import random
+from datetime import datetime
 
 
 initdeck = Blackjack_func.Deck()
@@ -15,8 +17,13 @@ deck = initdeck.deck()
 #create a counter to keep track of how many games were played
 gameCounter = 0
 
+#choose the number of times to loop and instantiate the value which will be
+loops = 10000
+test = 0
+
 #From proposal, we decided that the user would start out with $100 in the bank
 bank = 100.00
+max_bank = bank
 
 #if no value is supplied, 2 is the default bet value (not applicable in case of AI playing)
 default_bet_value = 2.00
@@ -25,6 +32,8 @@ default_bet_value = 2.00
 wins = 0
 losses = 0
 ties = 0
+
+win_df = pd.DataFrame({"win":[]})
 
 ##Agent Reward tracker
 RoundRewards = []
@@ -198,55 +207,65 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
     print("House total: "+str(sum(house_draw)))
     print("Agent total: "+str(sum(agent_draw)))
     
-    #START GAME REWARD LOGIC
+        #START GAME REWARD LOGIC
     if bust == 'Y':
         print("bust! you lose this round")
         bank = bank-bet
         losses = losses+1
         Reward = -1
+        win_df = pd.concat([win_df,pd.DataFrame({"win":[0]})])
     elif sum(house_draw) == 21 and sum(agent_draw) == 21:
         print("Push, you get your original bet back")
         ties = ties+1
         Reward = 1
+        win_df = pd.concat([win_df,pd.DataFrame({"win":[0]})])
     elif sum(house_draw) == 21 and sum(agent_draw) != 21:
         print("you lose this round")
         bank = bank-bet
         losses = losses+1
         Reward = -1
+        win_df = pd.concat([win_df,pd.DataFrame({"win":[0]})])
     elif sum(house_draw) != 21 and sum(agent_draw) == 21 and blackjack_status == 'Y':
         print("Blackjack! You win!")
         bank = bank+(bet*2)
         wins = wins +1
         Reward = 5
+        win_df = pd.concat([win_df,pd.DataFrame({"win":[1]})])
     elif sum(house_draw) != 21 and sum(agent_draw) == 21 and blackjack_status == 'N':
         print("You win!")
         bank = bank+bet
         wins = wins +1
         Reward = 3
+        win_df = pd.concat([win_df,pd.DataFrame({"win":[1]})])
     elif sum(agent_draw) > 21:
         print("bust! You lose this round")
         bank = bank-bet
         losses = losses+1
         Reward = -1
+        win_df = pd.concat([win_df,pd.DataFrame({"win":[0]})])
     elif sum(house_draw) == sum(agent_draw):
         print("Push, you get your original bet back")
         ties = ties+1
         Reward = 1
+        win_df = pd.concat([win_df,pd.DataFrame({"win":[0]})])
     elif sum(house_draw) < sum(agent_draw):
         print("you win!")
         bank = bank+bet
         wins = wins +1
         Reward = 3
+        win_df = pd.concat([win_df,pd.DataFrame({"win":[1]})])
     elif sum(house_draw) < 21 and sum(house_draw) > sum(agent_draw):
         print("you lose")
         bank = bank-bet
         losses = losses+1
         Reward = -1
+        win_df = pd.concat([win_df,pd.DataFrame({"win":[0]})])
     elif sum(house_draw) > 21 and sum(agent_draw) < 21:
         print("you win!")
         bank = bank+bet
         wins = wins +1
         Reward = 3
+        win_df = pd.concat([win_df,pd.DataFrame({"win":[1]})])
     #END GAME REWARD LOGIC
         
     #print(sum(deck))
@@ -256,29 +275,42 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
 
     
     gameCounter += 1
-    test += 1
+    #largest gain
+    if bank > max_bank:
+        max_bank = bank
+    #longest winning streak
+    
     print("current bank amount: $"+str(bank))
     RoundRewards.append(Reward)
     print("Continue Playing?")
-    AgentContinue = input()
+    AgentContinue = 'y'
     while str.upper(AgentContinue) not in ('Y','N','YES','NO'):
         print("incorrect value, please enter Y,N,YES, or NO")
-        AgentContinue = input()
+        AgentContinue = 'y'
     
     #End While Loop
 
+grouper = (win_df.win != win_df.win.shift()).cumsum()
+win_df['streak'] = win_df.groupby(grouper).cumsum()
+
 if str.upper(AgentContinue) in ('N', 'NO'):
     print("You have chosen not to continue playing")
-    print("total games played: ",str(gameCounter))
+    print("total games played: "+str(gameCounter))
     print(f"total wins so far: {wins}")
     print(f"Perecentage wins: {(wins/gameCounter) * 100}%")
+    print(f"Perecentage wins (excluding ties): {(wins/(gameCounter-ties)) * 100}%")
     print("total rewards: "+str(sum(RoundRewards)))
     print(f"wins: {wins} losses: {losses} ties: {ties}")
+    print("maximum gain during playing: $"+str(max_bank-100.00))
+    print("maximum winning streak: "+str(win_df['streak'].max()))
 
 if bank < 1.00:
     print("Game Over, no money left in the bank")
-    print("total games played: ",str(gameCounter))
+    print("total games played: "+str(gameCounter))
     print(f"Perecentage wins: {(wins/gameCounter) * 100}%")
+    print(f"Perecentage wins (excluding ties): {(wins/(gameCounter-ties)) * 100}%")
     print("total rewards: "+str(sum(RoundRewards)))
     print(f"wins: {wins} losses: {losses} ties: {ties}")
+    print("maximum gain during playing: $"+str(max_bank-100.00))
+    print("maximum winning streak: "+str(win_df['streak'].max()))
     #AI cannot continue if bank < minimum bet
