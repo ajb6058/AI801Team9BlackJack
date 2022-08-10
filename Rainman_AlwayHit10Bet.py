@@ -5,8 +5,10 @@
 # import sklearn
 #import tensorforce
 #import kerasRL
+import os
 import Blackjack_func
 import random
+from datetime import datetime
 
 
 initdeck = Blackjack_func.Deck()
@@ -14,6 +16,10 @@ deck = initdeck.deck()
 
 #create a counter to keep track of how many games were played
 gameCounter = 0
+
+#choose the number of times to loop and instantiate the value which will be
+loops = 10000
+test = 0
 
 #From proposal, we decided that the user would start out with $100 in the bank
 bank = 100.00
@@ -32,30 +38,35 @@ RoundRewards = []
 #Initiatlizing agent continue playing
 AgentContinue = 'Y'
 
+o = open('logs/'+str(os.path.basename(__file__)).replace('.py','')+datetime.now().strftime("%Y%m%d_%H%M%S")+'.log','w')
+
+
+
+
 #currently utilizing a while loop for testing. If Bank goes below 1.00 or deck goes below a summed value of 60, stop
 #When the deck class is created, we can create a nested while loop
 #The outer loop will check for bank value, the inner loop will check for deck size and re-shuffle when deck goes below a summed value of 60
-while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES'):
+while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES') and test < loops:
     
     #Agent choice each new turn, currently set to default value for testing
     if gameCounter > 0:
         print("Would you like to keep the same bet amount?")
-        keep_bet = input()
+        keep_bet = 'y'
         while str.upper(keep_bet) not in ('Y','N','YES','NO'):
             print("incorrect value, please enter Y,N,YES, or NO")
-            keep_bet = input()
+            keep_bet = 'y'
         if str.upper(keep_bet) in ('N','NO'):
             print("please choose your bet value (1,2,5, or 10)")
-            init_bet = input()
+            init_bet = "10"
             while str.lower(init_bet) not in ('','1','2','5','10','one','two','five','ten'):
                 print("incorrect value, please press enter or input 1, 2, 5, 10, one, two, five, or ten")
-                init_bet = input()
+                init_bet = "10"
     else:
         print("please choose your bet value (1,2,5, or 10)")
-        init_bet = input()
+        init_bet = "10"
         while str.lower(init_bet) not in ('','1','2','5','10','one','two','five','ten'):
             print("incorrect value, please press enter or input 1, 2, 5, 10, one, two, five, or ten")
-            init_bet = input()
+            init_bet = "10"
     
         
     if init_bet == '':
@@ -74,10 +85,10 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
     while bet > bank:
         print("Error, bank amount too low, please lower your bet")
         print("please choose your bet value (1,2,5, or 10)")
-        init_bet = input()
+        init_bet = "10"
         while str.lower(init_bet) not in ('','1','2','5','10','one','two','five','ten'):
             print("incorrect value, please press enter or input 1, 2, 5, 10, one, two, five, or ten")
-            init_bet = input()
+            init_bet = "10"
         if init_bet == '':
             bet = 2.00
         elif str.lower(init_bet) == 'one':
@@ -106,13 +117,13 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
     
     if sum(house_draw) == 21:
         print("initial house cards: "+str(house_draw[0])+" + "+str(house_draw[1]))
-        print("House Blackjack, Check your draw... if you have blackjack it is a push, if you do not it is a draw")
+        print("House Blackjack, Check your draw... if you have blackjack it is a push, if you do not it is a draw", file=o)
     elif sum(house_draw) == 22:
         #because it is possible to draw 2 aces in a single hand, we want to force one of those aces to be a 1 (since ace value by default is 11, but can be 1)
         house_draw[1] = 1
-        print("initial house cards: "+str(house_draw[0])+" + ??")
+        print("initial house cards: "+str(house_draw[0])+" + ??", file=o)
     else:
-        print("initial house cards: "+str(house_draw[0])+" + ??")
+        print("initial house cards: "+str(house_draw[0])+" + ??", file=o)
     
     #BREAK OUT INTO ITS OWN FUNCTION FOR AGENT DRAW
     #The Agent Draw is the initial hand for the Agent
@@ -140,7 +151,7 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
     if sum(agent_draw) == 22:
         agent_draw[1] = 1
     
-    print("initial agent cards: "+str(agent_draw[0])+" + "+str(agent_draw[1]))
+    print("initial agent cards: "+str(agent_draw[0])+" + "+str(agent_draw[1]), file=o)
     print(sum(agent_draw))
     
     if sum(house_draw) == 21 and sum(agent_draw) == 21:
@@ -148,7 +159,7 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
     elif sum(house_draw) == 21 and sum(agent_draw) != 21:
         print("") #Unsure if this should be converted to a break. The logic needs to be in place so that resulting logic can work properly
     elif sum(agent_draw) == 21:
-        print("Blackjack! Let's see what the house has")
+        print("Blackjack! Let's see what the house has", file=o)
         blackjack_status = 'Y' #updating to 'Y' because agent_draw has blackjack
     else:
         #The following nested if-else statements check for whether the agent would like to hit or stay
@@ -156,29 +167,29 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
             #There are 12 possible aces in the deck and if the initial draw is an ace and a 2 then the rest of the aces are drawn and then remaining 2s until 21, that is 16 possible hands
         agent_choice = ''
         while str.lower(agent_choice) != 'stay' and sum(agent_draw) < 21 and bust == 'N':
-            print("Current hand value: "+str(sum(agent_draw))+" Would you like to Hit or Stay?")
-            agent_choice = input()
+            print("Current hand value: "+str(sum(agent_draw))+" Would you like to Hit or Stay?", file=o)
+            agent_choice = 'hit'
             while str.lower(agent_choice) not in ('hit','stay'):
                 print("incorrect value, please enter hit or stay")
-                agent_choice = input()
+                agent_choice = 'hit'
             if str.lower(agent_choice) == "stay":
                 continue
             elif str.lower(agent_choice) == "hit":
                 agent_draw.append(deck.pop(random.randrange(0,len(deck))))
-                print("You drew a "+str(agent_draw[len(agent_draw)-1]))
+                print("You drew a "+str(agent_draw[len(agent_draw)-1]), file=o)
                 try:
                     agent_draw.index(11)
                     print("Would you like to change your ace to a 1?")
-                    agent_choice_ace = input()
+                    agent_choice_ace = 'y'
                     while str.upper(agent_choice_ace) not in ('Y','N','YES','NO'):
                         print("incorrect value, please enter Y,N,YES, or NO")
-                        agent_choice_ace = input()
+                        agent_choice_ace = 'y'
                     if str.upper(agent_choice_ace) in ('Y', 'YES'):
                         agent_draw[agent_draw.index(11)] = 1
                 except:
                     continue
                 if sum(agent_draw) == 21:
-                    print("You've hit the max without going over! Let's see what the house has")
+                    print("You've hit the max without going over! Let's see what the house has", file=o)
                 elif sum(agent_draw) > 21:
                     bust = 'Y'
 
@@ -195,55 +206,55 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
                 except:
                     continue
     
-    print("House total: "+str(sum(house_draw)))
-    print("Agent total: "+str(sum(agent_draw)))
+    print("House total: "+str(sum(house_draw)), file=o)
+    print("Agent total: "+str(sum(agent_draw)), file=o)
     
     #START GAME REWARD LOGIC
     if bust == 'Y':
-        print("bust! you lose this round")
+        print("bust! you lose this round", file=o)
         bank = bank-bet
         losses = losses+1
         Reward = -1
     elif sum(house_draw) == 21 and sum(agent_draw) == 21:
-        print("Push, you get your original bet back")
+        print("Push, you get your original bet back", file=o)
         ties = ties+1
         Reward = 1
     elif sum(house_draw) == 21 and sum(agent_draw) != 21:
-        print("you lose this round")
+        print("you lose this round", file=o)
         bank = bank-bet
         losses = losses+1
         Reward = -1
     elif sum(house_draw) != 21 and sum(agent_draw) == 21 and blackjack_status == 'Y':
-        print("Blackjack! You win!")
+        print("Blackjack! You win!", file=o)
         bank = bank+(bet*2)
         wins = wins +1
         Reward = 5
     elif sum(house_draw) != 21 and sum(agent_draw) == 21 and blackjack_status == 'N':
-        print("You win!")
+        print("You win!", file=o)
         bank = bank+bet
         wins = wins +1
         Reward = 3
     elif sum(agent_draw) > 21:
-        print("bust! You lose this round")
+        print("bust! You lose this round", file=o)
         bank = bank-bet
         losses = losses+1
         Reward = -1
     elif sum(house_draw) == sum(agent_draw):
-        print("Push, you get your original bet back")
+        print("Push, you get your original bet back", file=o)
         ties = ties+1
         Reward = 1
     elif sum(house_draw) < sum(agent_draw):
-        print("you win!")
+        print("you win!", file=o)
         bank = bank+bet
         wins = wins +1
         Reward = 3
     elif sum(house_draw) < 21 and sum(house_draw) > sum(agent_draw):
-        print("you lose")
+        print("you lose", file=o)
         bank = bank-bet
         losses = losses+1
         Reward = -1
     elif sum(house_draw) > 21 and sum(agent_draw) < 21:
-        print("you win!")
+        print("you win!", file=o)
         bank = bank+bet
         wins = wins +1
         Reward = 3
@@ -257,28 +268,46 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
     
     gameCounter += 1
     test += 1
-    print("current bank amount: $"+str(bank))
+    print("current bank amount: $"+str(bank), file=o)
     RoundRewards.append(Reward)
     print("Continue Playing?")
-    AgentContinue = input()
+    AgentContinue = 'y'
     while str.upper(AgentContinue) not in ('Y','N','YES','NO'):
         print("incorrect value, please enter Y,N,YES, or NO")
-        AgentContinue = input()
+        AgentContinue = 'y'
     
     #End While Loop
 
 if str.upper(AgentContinue) in ('N', 'NO'):
     print("You have chosen not to continue playing")
-    print("total games played: ",str(gameCounter))
+    print("total games played: "+str(gameCounter))
     print(f"total wins so far: {wins}")
     print(f"Perecentage wins: {(wins/gameCounter) * 100}%")
     print("total rewards: "+str(sum(RoundRewards)))
     print(f"wins: {wins} losses: {losses} ties: {ties}")
 
 if bank < 1.00:
-    print("Game Over, no money left in the bank")
-    print("total games played: ",str(gameCounter))
-    print(f"Perecentage wins: {(wins/gameCounter) * 100}%")
-    print("total rewards: "+str(sum(RoundRewards)))
-    print(f"wins: {wins} losses: {losses} ties: {ties}")
+    print("Game Over, no money left in the bank", file=o)
+    print("total games played: "+str(gameCounter), file=o)
+    print(f"Perecentage wins: {(wins/gameCounter) * 100}%", file=o)
+    print("total rewards: "+str(sum(RoundRewards)), file=o)
+    print(f"wins: {wins} losses: {losses} ties: {ties}", file=o)
     #AI cannot continue if bank < minimum bet
+    
+if test == loops:
+    print("Simulation complete", file=o)
+    print("total games played: "+str(gameCounter), file=o)
+    print(f"total wins so far: {wins}", file=o)
+    print(f"Perecentage wins: {(wins/gameCounter) * 100}%", file=o)
+    print("total rewards: "+str(sum(RoundRewards)), file=o)
+    print(f"wins: {wins} losses: {losses} ties: {ties}", file=o)
+
+#if sum(deck) < 60:
+#    print('Re-shuffling deck')
+#    print('current bank value: '+str(bank))
+#    print("total games played so far: ",str(gameCounter))
+#    print(f"total wins so far: {wins}")
+#    print(f"Perecentage wins: {(wins/gameCounter) * 100}%")
+    #call "deck" class to re-instantiate the deck
+
+o.close()
