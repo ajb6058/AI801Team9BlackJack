@@ -193,7 +193,8 @@ while bank >= 1.00 and str.upper(AgentContinue) in ('Y','YES'):
         #There are 16 layers currently based off of 3 decks: 
             #There are 12 possible aces in the deck and if the initial draw is an ace and a 2 then the rest of the aces are drawn and then remaining 2s until 21, that is 16 possible hands
         agent_choice = ''
-        while str.lower(agent_choice) != 'stay' and sum(agent_draw) < 21 and bust == 'N':
+        endloop = 'N'
+        while str.lower(agent_choice) != 'stay' and bust == 'N' and endloop == 'N':
             if 21-sum(agent_draw) < 10:
                 odds = round((1-((21-sum(agent_draw))/13))*100,2)
             else:
@@ -214,11 +215,11 @@ while bank >= 1.00 and str.upper(AgentContinue) in ('Y','YES'):
                     deck = Blackjack_func.Deck().deck()
                     random.shuffle(deck)
                 agent_draw.append(deck.pop(random.randrange(0,len(deck))))
-                print_both("You drew a "+str(agent_draw[len(agent_draw)-1]))
+                print_both("You drew a(n) "+str(agent_draw[len(agent_draw)-1]))
                 try:
                     agent_draw.index(11)
-                    print_both("Total with ace as 11: "+str(sum(agent_hand)))
-                    print_both("Total with ace as 1: "+str(sum(agent_hand)-10))
+                    print_both("Total with ace as 11: "+str(sum(agent_draw)))
+                    print_both("Total with ace as 1: "+str(sum(agent_draw)-10))
                     print_both("Would you like to change your ace value to a 1?")
                     agent_choice_ace = input()
                     o.write("\n"+agent_choice_ace)
@@ -228,9 +229,10 @@ while bank >= 1.00 and str.upper(AgentContinue) in ('Y','YES'):
                         o.write("\n"+agent_choice_ace)
                     if str.upper(agent_choice_ace) in ('Y', 'YES'):
                         agent_draw[agent_draw.index(11)] = 1
-                except:
+                except Exception as e:
                     print("") 
                 if sum(agent_draw) == 21:
+                    endloop = 'Y'
                     print_both("You've hit the max without going over! Let's see what the house has")
                 elif sum(agent_draw) > 21:
                     bust = 'Y'
