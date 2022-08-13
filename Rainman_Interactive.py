@@ -13,6 +13,7 @@ import sys
 
 #create a counter to keep track of how many games were played
 gameCounter = 0
+blackjackcounter = 0
 
 #From proposal, we decided that the user would start out with $100 in the bank
 bank = 100.00
@@ -35,7 +36,7 @@ RoundRewards = []
 AgentContinue = 'Y'
 
 
-file = 'logs/'+str(os.path.basename(__file__)).replace('.py','')+datetime.now().strftime("%Y%m%d_%H%M%S")+'.log'
+file = 'InteractiveLogs/'+str(os.path.basename(__file__)).replace('.py','')+datetime.now().strftime("%Y%m%d_%H%M%S")+'.log'
 
 o = open(file,'w')
 def print_both(*args):
@@ -182,10 +183,8 @@ while bank >= 1.00 and str.upper(AgentContinue) in ('Y','YES'):
     
     print_both("initial agent cards: "+str(agent_draw[0])+" + "+str(agent_draw[1]))
     
-    if sum(house_draw) == 21 and sum(agent_draw) == 21:
-        print_both("") #Unsure if this should be converted to a break. The logic needs to be in place so that resulting logic can work properly
-    elif sum(house_draw) == 21 and sum(agent_draw) != 21:
-        print_both("") #Unsure if this should be converted to a break. The logic needs to be in place so that resulting logic can work properly
+    if sum(house_draw) == 21:
+        print("") 
     elif sum(agent_draw) == 21:
         print_both("Blackjack! Let's see what the house has")
         blackjack_status = 'Y' #updating to 'Y' because agent_draw has blackjack
@@ -195,7 +194,12 @@ while bank >= 1.00 and str.upper(AgentContinue) in ('Y','YES'):
             #There are 12 possible aces in the deck and if the initial draw is an ace and a 2 then the rest of the aces are drawn and then remaining 2s until 21, that is 16 possible hands
         agent_choice = ''
         while str.lower(agent_choice) != 'stay' and sum(agent_draw) < 21 and bust == 'N':
-            print_both("Current hand value: "+str(sum(agent_draw))+" Would you like to Hit or Stay?")
+            if 21-sum(agent_draw) < 10:
+                odds = round((1-((21-sum(agent_draw))/13))*100,2)
+            else:
+                odds = 0
+            print_both("Current hand value: "+str(sum(agent_draw))+" There is a "+str(odds)+"% chance of going over if you hit")
+            print_both("Would you like to Hit or Stay?")
             agent_choice = input()
             o.write("\n"+agent_choice)
             while str.lower(agent_choice) not in ('hit','stay'):
@@ -203,7 +207,7 @@ while bank >= 1.00 and str.upper(AgentContinue) in ('Y','YES'):
                 agent_choice = input()
                 o.write("\n"+agent_choice)
             if str.lower(agent_choice) == "stay":
-                continue
+                print("") 
             elif str.lower(agent_choice) == "hit":
                 if len(deck) < 1:
                     #re-create deck
@@ -213,7 +217,9 @@ while bank >= 1.00 and str.upper(AgentContinue) in ('Y','YES'):
                 print_both("You drew a "+str(agent_draw[len(agent_draw)-1]))
                 try:
                     agent_draw.index(11)
-                    print_both("Would you like to change your ace to a 1?")
+                    print_both("Total with ace as 11: "+str(sum(agent_hand)))
+                    print_both("Total with ace as 1: "+str(sum(agent_hand)-10))
+                    print_both("Would you like to change your ace value to a 1?")
                     agent_choice_ace = input()
                     o.write("\n"+agent_choice_ace)
                     while str.upper(agent_choice_ace) not in ('Y','N','YES','NO'):
@@ -223,7 +229,7 @@ while bank >= 1.00 and str.upper(AgentContinue) in ('Y','YES'):
                     if str.upper(agent_choice_ace) in ('Y', 'YES'):
                         agent_draw[agent_draw.index(11)] = 1
                 except:
-                    continue
+                    print("") 
                 if sum(agent_draw) == 21:
                     print_both("You've hit the max without going over! Let's see what the house has")
                 elif sum(agent_draw) > 21:
@@ -232,6 +238,8 @@ while bank >= 1.00 and str.upper(AgentContinue) in ('Y','YES'):
                 #re-create deck
                 deck = Blackjack_func.Deck().deck()
                 random.shuffle(deck)
+        if sum(agent_draw) > 21:
+            bust = 'Y'
 
     #STOP GAME AGENT CHOICE LOGIC
     
@@ -247,7 +255,7 @@ while bank >= 1.00 and str.upper(AgentContinue) in ('Y','YES'):
                     house_draw.index(11)
                     house_draw[house_draw.index(11)] = 1
                 except:
-                    continue
+                    print("") 
             if sum(deck) < 1:
                 #re-create deck
                 deck = Blackjack_func.Deck().deck()
@@ -325,6 +333,8 @@ while bank >= 1.00 and str.upper(AgentContinue) in ('Y','YES'):
 
     
     gameCounter += 1
+    if blackjack_status == 'Y':
+        blackjackcounter += 1
     #largest gain
     if bank > max_bank:
         max_bank = bank
@@ -347,7 +357,9 @@ win_df['streak'] = win_df.groupby(grouper).cumsum()
 
 if str.upper(AgentContinue) in ('N', 'NO'):
     print_both("You have chosen not to continue playing")
+    print_both("Ending bank value: $"+str(bank))
     print_both("total games played: "+str(gameCounter))
+    print_both("total blackjacks: "+str(blackjackcounter))
     print_both(f"total wins so far: {wins}")
     print_both(f"Perecentage wins: {(wins/gameCounter) * 100}%")
     print_both(f"Perecentage wins (excluding ties): {(wins/(gameCounter-ties)) * 100}%")
@@ -359,6 +371,7 @@ if str.upper(AgentContinue) in ('N', 'NO'):
 if bank < 1.00:
     print_both("Game Over, no money left in the bank")
     print_both("total games played: "+str(gameCounter))
+    print_both("total blackjacks: "+str(blackjackcounter))
     print_both(f"Perecentage wins: {(wins/gameCounter) * 100}%")
     print_both(f"Perecentage wins (excluding ties): {(wins/(gameCounter-ties)) * 100}%")
     print_both("total rewards: "+str(sum(RoundRewards)))

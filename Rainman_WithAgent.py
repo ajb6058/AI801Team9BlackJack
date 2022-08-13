@@ -9,7 +9,7 @@ import Blackjack_func
 import random
 from datetime import datetime
 
-reward_options = {"lose_1":-1, "tie_1":0, "win_1":1, "blackjack_1": 2,"lose_2":-2, "tie_2":0, "win_2":2, "blackjack_2": 4,"lose_5":-5, "tie_5":0, "win_5":5, "blackjack_5": 10,"lose_10":-10, "tie_10":0, "win_10":10, "blackjack_10": 20}
+#reward_options = {"lose_1":-1, "tie_1":0, "win_1":1, "blackjack_1": 2,"lose_2":-2, "tie_2":0, "win_2":2, "blackjack_2": 4,"lose_5":-5, "tie_5":0, "win_5":5, "blackjack_5": 10,"lose_10":-10, "tie_10":0, "win_10":10, "blackjack_10": 20}
     
 #There are 4 different state spaces identified: hit/stay, ace conversion, continue play, and bet
 # hit = 0, stand = 1
@@ -50,9 +50,8 @@ for _ in range(NUM_EPISODES):
     #Initiatlizing agent continue playing
     AgentContinue = 'Y'
     episode_reward = 0
-    #currently utilizing a while loop for testing. If Bank goes below 1.00 or deck goes below a summed value of 60, stop
-    #When the deck class is created, we can create a nested while loop
-    #The outer loop will check for bank value, the inner loop will check for deck size and re-shuffle when deck goes below a summed value of 60
+    
+    #Start Environment Logic
     while bank >= 1.00 and str.upper(AgentContinue) in ('Y','YES'):
         
         if gameCounter == 0:
@@ -165,7 +164,7 @@ for _ in range(NUM_EPISODES):
                 print("Current hand value: "+str(sum(agent_draw))+" Would you like to Hit or Stay?")
                 agent_choice = action_space_hitstay.sample()
                 if agent_choice == 1:
-                    continue
+                    print("")
                 elif agent_choice == 0:
                     if len(deck) < 1:
                         #re-create deck
@@ -180,7 +179,7 @@ for _ in range(NUM_EPISODES):
                         if agent_choice_ace == 0:
                             agent_draw[agent_draw.index(11)] = 1
                     except:
-                        continue
+                        print("")
                     if sum(agent_draw) == 21:
                         print("You've hit the max without going over! Let's see what the house has")
                     elif sum(agent_draw) > 21:
@@ -204,7 +203,7 @@ for _ in range(NUM_EPISODES):
                         house_draw.index(11)
                         house_draw[house_draw.index(11)] = 1
                     except:
-                        continue
+                        print("")
                 if sum(deck) < 1:
                     #re-create deck
                     deck = Blackjack_func.Deck().deck()

@@ -189,7 +189,7 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
                 print("incorrect value, please enter hit or stay")
                 agent_choice = 'hit'
             if str.lower(agent_choice) == "stay":
-                continue
+                print("")
             elif str.lower(agent_choice) == "hit":
                 agent_draw.append(deck.pop(random.randrange(0,len(deck))))
                 print("You drew a "+str(agent_draw[len(agent_draw)-1]), file=o)
@@ -203,7 +203,7 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
                     if str.upper(agent_choice_ace) in ('Y', 'YES'):
                         agent_draw[agent_draw.index(11)] = 1
                 except:
-                    continue
+                    print("")
                 if sum(agent_draw) == 21:
                     print("You've hit the max without going over! Let's see what the house has", file=o)
                 elif sum(agent_draw) > 21:
@@ -223,7 +223,7 @@ while bank >= 1.00 and sum(deck) >= 60 and str.upper(AgentContinue) in ('Y','YES
                     house_draw.index(11)
                     house_draw[house_draw.index(11)] = 1
                 except:
-                    continue
+                    print("")
             if sum(deck) < 1:
                 #re-create deck
                 deck = initdeck.deck()

@@ -197,7 +197,7 @@ while test < loops:
                 else:
                     agent_choice = 'stay'
             if str.lower(agent_choice) == "stay":
-                continue
+                print("")
             elif str.lower(agent_choice) == "hit":
                 if len(deck) < 1:
                     #re-create deck
@@ -214,7 +214,7 @@ while test < loops:
                     if str.upper(agent_choice_ace) in ('Y', 'YES'):
                         agent_draw[agent_draw.index(11)] = 1
                 except:
-                    continue
+                    print("")
                 if sum(agent_draw) == 21:
                     print("You've hit the max without going over! Let's see what the house has", file=o)
                 elif sum(agent_draw) > 21:
@@ -236,7 +236,7 @@ while test < loops:
                     house_draw.index(11)
                     house_draw[house_draw.index(11)] = 1
                 except:
-                    continue
+                    print("")
             if len(deck) < 1:
                 #re-create deck
                 deck = initdeck.deck()
