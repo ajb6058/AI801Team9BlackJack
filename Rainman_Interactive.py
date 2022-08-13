@@ -379,7 +379,7 @@ if bank < 1.00:
     print_both("maximum gain during playing: $"+str(max_bank-100.00))
     print_both("maximum winning streak: "+str(win_df['streak'].max()))
     #AI cannot continue if bank < minimum bet
-
+    
+o.close()
 print("Press 'Enter' when you are ready to close the application")
 input()
-o.close()
