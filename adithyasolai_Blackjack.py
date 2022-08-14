@@ -25,6 +25,8 @@ ranks = {
 
 traintotal = 1000000
 
+NUM_EPISODES = 1000
+
 initial_bank = 100
 NUM_DECKS = 3
 
@@ -339,7 +341,6 @@ class BlackjackEnv(gym.Env):
 env = BlackjackEnv()
 
 total_rewards = 0
-NUM_EPISODES = 1000
 
 for _ in range(NUM_EPISODES):
     env.reset()
@@ -564,8 +565,6 @@ plt.show()
 env = BlackjackEnv()
 
 total_rewards = 0
-episode_reward = 0
-NUM_EPISODES = 1000
 
 for _ in range(NUM_EPISODES):
     state = env.reset()
@@ -598,6 +597,3 @@ print(f"Blackjacks: {trained_blackjacks}")
 print(f"Wins: {trained_wins}")
 print(f"Ties: {trained_ties}")
 print(f"Losses: {trained_losses}")
-
-print("Press 'Enter' when you are ready to close the application")
-input()
