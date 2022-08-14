@@ -13,7 +13,20 @@ This script allows users to play Blackjack on their own and maintain a reward sy
 5. If the value is still under 21 after hitting, choose again (and so on)
 6. After the game has concluded, you will be given the option to continue playing or end.
 7. After ending the game, a summary will be provided
-### AI-Env Script
+
+### Monte-Carlo Approaches:
+#### Monte_Carlo
+##### About
+This script is based off of https://towardsdatascience.com/playing-blackjack-using-model-free-reinforcement-learning-in-google-colab-aa2041a2c13d
+It uses a pre-defined blackjack OpenGym environment. You can alter the Q-learning variables at the beginning of the script (see ipynb file)
+
+#### adithyasolai_Blackjack
+##### About
+This script is based off of https://github.com/adithyasolai/Monte-Carlo-Blackjack
+At the beginning of the script, you can set the number of training iterations (currently set to 1,000,000), the number of episodes (games), and initial bank and number of decks. The initial bank does not have much impact in this scenario, but number of decks could have a positive impact on the number of blackjacks (since there are more aces in the deck).
+This script must be run in Spyder.
+
+### Rule-based Agent Scripts
 #### Rainman_WithAgent
 ##### About
 This script was set up as an OpenGym Environment and runs using a discrete space approach for each of the actions:
@@ -21,7 +34,7 @@ This script was set up as an OpenGym Environment and runs using a discrete space
 - bet (discrete space of 4)
 - convert ace (discrete space of 2)
 - continue playing (discrete space of 2)
-### Pre-Defined Scripts
+
 #### Rainman_AlwaysHit
 ##### About
 1. There are 4 different scripts where the agent choice is always hit (request an additional card be added to the hand). Due to the agent choice being defaulted to hit, the ace conversion is always set to yes (if an ace is drawn, convert it to a 1 as opposed to an 11). Each script is aligned to a different bet amount (1,2,5,10). The full game results are stored in a log file
